@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IRBC Accountability Chart</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@700&display=swap');
+
+  :root {
+    --bg: #F7F5F0;
+    --card-bg: #FFFFFF;
+    --text: #2C2C2C;
+    --text-light: #6B6B6B;
+    --accent: #2D5F3F;
+    --accent-light: #E8F0EB;
+    --visionary: #1B4332;
+    --integrator: #2D5F3F;
+    --program: #B85C38;
+    --guest: #5B7FA5;
+    --facilities: #7A6C5D;
+    --business: #6B5B73;
+    --development: #8B6F47;
+    --border: #E0DCD4;
+    --shadow: rgba(44, 44, 44, 0.08);
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: var(--visionary);
+    color: white;
+    padding: 40px 32px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(255,255,255,0.02) 30px, rgba(255,255,255,0.02) 60px);
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    letter-spacing: 0.02em;
+    position: relative;
+    margin-bottom: 4px;
+  }
+  .header p {
+    font-size: 0.95rem;
+    opacity: 0.7;
+    position: relative;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px 32px;
+    flex-wrap: wrap;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .controls button {
+    font-family: 'DM Sans', sans-serif;
+    padding: 8px 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 100px;
+    background: white;
+    color: var(--text);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .controls button:hover { border-color: var(--accent); color: var(--accent); }
+  .controls button.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+  .overview { display: grid; gap: 24px; }
+
+  .top-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .dept-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: all 0.25s;
+    cursor: pointer;
+  }
+  .card:hover { box-shadow: 0 8px 30px var(--shadow); transform: translateY(-2px); }
+  .card-stripe { height: 5px; width: 100%; }
+  .card-body { padding: 20px; }
+  .card-role { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 4px; }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; margin-bottom: 12px; }
+  .card-focus { font-size: 0.82rem; color: var(--text-light); font-style: italic; margin-bottom: 12px; }
+  .card-owns-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-light); margin-bottom: 6px; }
+  .card-owns { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag { font-size: 0.78rem; padding: 3px 10px; border-radius: 100px; background: var(--accent-light); color: var(--accent); font-weight: 500; }
+  .kpi-section { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); }
+  .kpi-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-light); margin-bottom: 6px; }
+  .kpi-item { font-size: 0.8rem; color: var(--text-light); }
+
+  .theme-visionary .card-stripe { background: var(--visionary); }
+  .theme-visionary .card-role { color: var(--visionary); }
+  .theme-visionary .tag { background: #E8F0EB; color: var(--visionary); }
+  .theme-integrator .card-stripe { background: var(--integrator); }
+  .theme-integrator .card-role { color: var(--integrator); }
+  .theme-integrator .tag { background: #E8F0EB; color: var(--integrator); }
+  .theme-program .card-stripe { background: var(--program); }
+  .theme-program .card-role { color: var(--program); }
+  .theme-program .tag { background: #FDEEE8; color: var(--program); }
+  .theme-guest .card-stripe { background: var(--guest); }
+  .theme-guest .card-role { color: var(--guest); }
+  .theme-guest .tag { background: #E8EFF5; color: var(--guest); }
+  .theme-facilities .card-stripe { background: var(--facilities); }
+  .theme-facilities .card-role { color: var(--facilities); }
+  .theme-facilities .tag { background: #F0ECE8; color: var(--facilities); }
+  .theme-business .card-stripe { background: var(--business); }
+  .theme-business .card-role { color: var(--business); }
+  .theme-business .tag { background: #F0ECF2; color: var(--business); }
+  .theme-development .card-stripe { background: var(--development); }
+  .theme-development .card-role { color: var(--development); }
+  .theme-development .tag { background: #F2EDE5; color: var(--development); }
+
+  .detail-view { display: none; }
+  .detail-view.active { display: block; }
+  .detail-back { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--accent); cursor: pointer; margin-bottom: 20px; font-weight: 500; }
+  .detail-back:hover { text-decoration: underline; }
+
+  .detail-header {
+    padding: 28px;
+    border-radius: var(--radius);
+    color: white;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .detail-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(-45deg, transparent, transparent 20px, rgba(255,255,255,0.04) 20px, rgba(255,255,255,0.04) 40px);
+  }
+  .detail-header h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; position: relative; }
+  .detail-header p { font-size: 0.95rem; opacity: 0.85; position: relative; margin-top: 6px; }
+
+  .sub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+  .sub-card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; transition: all 0.2s; }
+  .sub-card:hover { box-shadow: 0 4px 16px var(--shadow); }
+  .sub-card h4 { font-size: 0.95rem; margin-bottom: 4px; }
+  .sub-card .sub-role { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-light); margin-bottom: 8px; }
+  .sub-card .sub-items { font-size: 0.82rem; color: var(--text-light); }
+  .sub-card .sub-items span { display: inline-block; margin-right: 4px; }
+  .sub-card .sub-items span::after { content: ' \00B7 '; color: var(--border); }
+  .sub-card .sub-items span:last-child::after { content: ''; }
+
+  .connector-label { font-size: 0.75rem; color: var(--text-light); text-align: center; padding: 8px 0; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; }
+
+  @media print {
+    .controls { display: none !important; }
+    .card { break-inside: avoid; box-shadow: none !important; }
+    .card:hover { transform: none; }
+    body { background: white; }
+    .header { padding: 20px; }
+    .container { padding: 12px; }
+  }
+  @media (max-width: 600px) {
+    .top-row { grid-template-columns: 1fr; }
+    .header h1 { font-size: 1.6rem; }
+    .controls { gap: 6px; }
+    .controls button { padding: 6px 14px; font-size: 0.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>IRBC Accountability Chart</h1>
+  <p>Iowa Regular Baptist Camp &mdash; Organizational Structure</p>
+</div>
+
+<div class="controls" id="controls">
+  <button class="active" data-view="overview">Overview</button>
+  <button data-view="program">Program</button>
+  <button data-view="guest">Guest Services</button>
+  <button data-view="facilities">Facilities</button>
+  <button data-view="business">Business</button>
+  <button data-view="development">Development &amp; Marketing</button>
+</div>
+
+<div class="container">
+
+  <!-- OVERVIEW -->
+  <div class="overview view-section" id="view-overview">
+    <div class="top-row">
+      <div class="card theme-visionary">
+        <div class="card-stripe"></div>
+        <div class="card-body">
+          <div class="card-role">Visionary</div>
+          <div class="card-title">Visionary</div>
+          <div class="card-focus">Vision &amp; spiritual direction, major donor relationships, strategic partnerships, long-term property planning, board relationship</div>
+          <div class="card-owns-label">Owns</div>
+          <div class="card-owns">
+            <span class="tag">Vision</span><span class="tag">Culture</span><span class="tag">Fundraising Leadership</span><span class="tag">Brand</span>
+          </div>
+        </div>
+      </div>
+      <div class="card theme-integrator">
+        <div class="card-stripe"></div>
+        <div class="card-body">
+          <div class="card-role">Integrator</div>
+          <div class="card-title">Integrator</div>
+          <div class="card-focus">Day-to-day execution, makes departments work together, holds team accountable, oversees budget &amp; financial performance</div>
+          <div class="card-owns-label">Owns</div>
+          <div class="card-owns">
+            <span class="tag">Scorecard</span><span class="tag">Rocks (90-day goals)</span><span class="tag">Budget</span><span class="tag">Staff Leadership</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector-label">&#9660; Reports To Integrator &#9660;</div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:12px; max-width:700px; margin:0 auto 8px;">
+      <div class="sub-card" style="text-align:center;"><div class="sub-role">Support</div><h4>Executive Assistant</h4></div>
+      <div class="sub-card" style="text-align:center;"><div class="sub-role">Support</div><h4>Communications Admin</h4></div>
+      <div class="sub-card" style="text-align:center;"><div class="sub-role">Support</div><h4>Operations Assistant</h4></div>
+    </div>
+
+    <div class="connector-label">&#9660; Department Heads &#9660;</div>
+
+    <div class="dept-row">
+      <div class="card theme-program" onclick="switchTab('program')">
+        <div class="card-stripe"></div>
+        <div class="card-body">
+          <div class="card-role">PD</div>
+          <div class="card-title">Program Director</div>
+          <div class="card-owns-label">Owns</div>
+          <div class="card-owns">
+            <span class="tag">Summer Camp</span><span class="tag">Retreats</span><span class="tag">Speaker Booking</span><span class="tag">Curriculum</span><span class="tag">Camper Experience</span><span class="tag">Seasonal Staff</span><span class="tag">Guest Group Planning</span>
+          </div>
+          <div class="kpi-section"><div class="kpi-label">KPIs</div><div class="kpi-item">Camper retention % &middot; Staff return rate &middot; Incident rate</div></div>
+        </div>
+      </div>
+      <div class="card theme-guest" onclick="switchTab('guest')">
+        <div class="card-stripe"></div>
+        <div class="card-body">
+          <div class="card-role">GS</div>
+          <div class="card-title">Guest Services Director</div>
+          <div class="card-owns-label">Owns</div>
+          <div class="card-owns">
+            <span class="tag">Food Service</span><span class="tag">Housekeeping</span><span class="tag">Retreat Coordination</span><span class="tag">Guest Satisfaction</span><span class="tag">Scheduling</span>
+          </div>
+          <div class="kpi-section"><div class="kpi-label">KPIs</div><div class="kpi-item">Food cost % &middot; Guest satisfaction &middot; Repeat booking rate</div></div>
+        </div>
+      </div>
+      <div class="card theme-facilities" onclick="switchTab('facilities')">
+        <div class="card-stripe"></div>
+        <div class="card-body">
+          <div class="card-role">FM</div>
+          <div class="card-title">Facilities Manager</div>
+          <div class="card-owns-label">Owns</div>
+          <div class="card-owns">
+            <span class="tag">Maintenance</span><span class="tag">Capital Improvement</span><span class="tag">Safety &amp; Compliance</span><span class="tag">Vendors</span><span class="tag">Work Crews</span><span class="tag">Volunteers</span>
+          </div>
+          <div class="kpi-section"><div class="kpi-label">KPIs</div><div class="kpi-item">Preventative maintenance % &middot; Safety incidents &middot; Budget variance &middot; Project timelines</div></div>
+        </div>
+      </div>
+      <div class="card theme-business" onclick="switchTab('business')">
+        <div class="card-stripe"></div>
+        <div class="card-body">
+          <div class="card-role">BM</div>
+          <div class="card-title">Business Manager</div>
+          <div class="card-owns-label">Owns</div>
+          <div class="card-owns">
+            <span class="tag">Accounting</span><span class="tag">Payroll</span><span class="tag">HR</span><span class="tag">Insurance</span><span class="tag">Vendor Contracts</span><span class="tag">Admin</span>
+          </div>
+          <div class="kpi-section"><div class="kpi-label">KPIs</div><div class="kpi-item">Budget variance &middot; Cash flow &middot; Audit compliance</div></div>
+        </div>
+      </div>
+      <div class="card theme-development" onclick="switchTab('development')">
+        <div class="card-stripe"></div>
+        <div class="card-body">
+          <div class="card-role">DD</div>
+          <div class="card-title">Development &amp; Marketing Director</div>
+          <div class="card-owns-label">Owns</div>
+          <div class="card-owns">
+            <span class="tag">Fundraising</span><span class="tag">Donor Communication</span><span class="tag">Website &amp; Social</span><span class="tag">Church Partnerships</span><span class="tag">Recruitment</span><span class="tag">Guest Group Intake</span>
+          </div>
+          <div class="kpi-section"><div class="kpi-label">KPIs</div><div class="kpi-item">Donations raised &middot; Camper registrations &middot; Donor retention &middot; Beds filled</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRAM DETAIL -->
+  <div class="detail-view view-section" id="view-program">
+    <div class="detail-back" onclick="switchTab('overview')">&larr; Back to Overview</div>
+    <div class="detail-header" style="background:var(--program);">
+      <h2>Program Director</h2>
+      <p>Summer camp programming &middot; Retreat programming &middot; Speaker/worship booking &middot; Curriculum &middot; Camper experience &middot; Seasonal staff hiring &amp; training &middot; Guest group planning &amp; communication</p>
+    </div>
+    <div class="connector-label">Direct Reports &amp; Program Areas</div>
+    <div class="sub-grid">
+      <div class="sub-card"><div class="sub-role">Role &mdash; PC</div><h4>Program Chairman (?)</h4><div class="sub-items"><span>Speaker</span><span>Songleader</span><span>Schedule</span></div></div>
+      <div class="sub-card"><div class="sub-role">Managers &mdash; AM</div><h4>Adventure Activities Managers</h4><div class="sub-items"><span>Zipline</span><span>Pool/Lake</span><span>Archery</span><span>Paintball</span><span>Climbing</span><span>Boats</span><span>Fires</span></div></div>
+      <div class="sub-card"><div class="sub-role">Staff &mdash; AS</div><h4>Activities Support Staff</h4><div class="sub-items"><span>General activities support</span></div></div>
+      <div class="sub-card"><div class="sub-role">Staff &mdash; AS</div><h4>Adventure Activities Staff</h4><div class="sub-items"><span>Activity-specific staff under AM</span></div></div>
+      <div class="sub-card"><div class="sub-role">Area &mdash; KC</div><h4>Kid's Classes</h4><div class="sub-items"><span>Kid's Class Staff</span></div></div>
+      <div class="sub-card"><div class="sub-role">Area &mdash; L</div><h4>LCA</h4><div class="sub-items"><span>Leadership / counselor area</span></div></div>
+    </div>
+  </div>
+
+  <!-- GUEST SERVICES DETAIL -->
+  <div class="detail-view view-section" id="view-guest">
+    <div class="detail-back" onclick="switchTab('overview')">&larr; Back to Overview</div>
+    <div class="detail-header" style="background:var(--guest);">
+      <h2>Guest Services Director</h2>
+      <p>Food service &middot; Housekeeping &middot; Retreat coordination &middot; Guest satisfaction &middot; Scheduling</p>
+    </div>
+    <div class="connector-label">Direct Reports &amp; Service Areas</div>
+    <div class="sub-grid">
+      <div class="sub-card"><div class="sub-role">Manager &mdash; FM</div><h4>Foodservice Manager</h4><div class="sub-items"><span>Head Cook</span><span>Cooks</span><span>Dining Hall Supervisor &rarr; Staff</span><span>Dishroom Supervisor &rarr; Staff</span></div></div>
+      <div class="sub-card"><div class="sub-role">Coordinator &mdash; CC</div><h4>Camp Care Coordinator</h4><div class="sub-items"><span>Cleaning Staff</span></div></div>
+      <div class="sub-card"><div class="sub-role">Manager &mdash; CM</div><h4>Customer Service Manager</h4><div class="sub-items"><span>Registration</span><span>Calendar</span><span>Email</span><span>Voicemail</span><span>Scheduling</span><span>Camper Books</span><span>Office Staff</span></div></div>
+      <div class="sub-card"><div class="sub-role">Manager &mdash; GM</div><h4>Gift Store Manager</h4><div class="sub-items"><span>Gift Store Staff</span></div></div>
+      <div class="sub-card"><div class="sub-role">Manager &mdash; CM</div><h4>Coffee Shop Manager</h4><div class="sub-items"><span>Coffee Shop Staff</span></div></div>
+      <div class="sub-card"><div class="sub-role">Manager &mdash; CM</div><h4>Concessions Manager</h4><div class="sub-items"><span>Concessions Staff</span></div></div>
+      <div class="sub-card"><div class="sub-role">Manager &mdash; CM</div><h4>Crafts Manager</h4><div class="sub-items"><span>Craft Staff</span></div></div>
+      <div class="sub-card" style="border-style:dashed;"><div class="sub-role">Note</div><h4>Need Based on Size?</h4><div class="sub-items"><span>Staffing levels scale with group size</span></div></div>
+    </div>
+  </div>
+
+  <!-- FACILITIES DETAIL -->
+  <div class="detail-view view-section" id="view-facilities">
+    <div class="detail-back" onclick="switchTab('overview')">&larr; Back to Overview</div>
+    <div class="detail-header" style="background:var(--facilities);">
+      <h2>Facilities Manager</h2>
+      <p>Maintenance systems &middot; Capital improvement planning &middot; Safety &amp; compliance &middot; Vendor management &middot; Work crews &middot; Volunteer management &middot; Building projects</p>
+    </div>
+    <div class="connector-label">Direct Reports &amp; Facility Areas</div>
+    <div class="sub-grid">
+      <div class="sub-card"><div class="sub-role">Area &mdash; B</div><h4>Buildings</h4><div class="sub-items"><span>Buildings Staff</span></div></div>
+      <div class="sub-card"><div class="sub-role">Area &mdash; G</div><h4>Grounds</h4><div class="sub-items"><span>Grounds Staff</span></div></div>
+      <div class="sub-card"><div class="sub-role">Area &mdash; V</div><h4>Vehicles</h4><div class="sub-items"><span>Mechanics</span></div></div>
+      <div class="sub-card"><div class="sub-role">Area &mdash; I</div><h4>Infrastructure</h4><div class="sub-items"><span>Infra Staff</span></div></div>
+      <div class="sub-card"><div class="sub-role">Area &mdash; E</div><h4>Equipment / Appliances</h4><div class="sub-items"><span>Technician Staff</span></div></div>
+      <div class="sub-card"><div class="sub-role">Area &mdash; I</div><h4>IT</h4><div class="sub-items"><span>Technology systems</span></div></div>
+    </div>
+  </div>
+
+  <!-- BUSINESS DETAIL -->
+  <div class="detail-view view-section" id="view-business">
+    <div class="detail-back" onclick="switchTab('overview')">&larr; Back to Overview</div>
+    <div class="detail-header" style="background:var(--business);">
+      <h2>Business Manager</h2>
+      <p>Accounting &middot; Payroll &middot; HR compliance &middot; Insurance &middot; Vendor contracts &middot; Admin</p>
+    </div>
+    <div class="connector-label">Direct Reports</div>
+    <div class="sub-grid">
+      <div class="sub-card"><div class="sub-role">Staff &mdash; B</div><h4>Bookkeeping</h4><div class="sub-items"><span>Financial record keeping</span></div></div>
+      <div class="sub-card"><div class="sub-role">Staff &mdash; BA</div><h4>Business Assistant</h4><div class="sub-items"><span>Administrative support</span></div></div>
+    </div>
+  </div>
+
+  <!-- DEVELOPMENT DETAIL -->
+  <div class="detail-view view-section" id="view-development">
+    <div class="detail-back" onclick="switchTab('overview')">&larr; Back to Overview</div>
+    <div class="detail-header" style="background:var(--development);">
+      <h2>Development &amp; Marketing Director</h2>
+      <p>Fundraising campaigns &middot; Donor communication &middot; Website &amp; social media &middot; Church partnerships &middot; Camper recruitment strategy &middot; Guest group intake</p>
+    </div>
+    <div class="connector-label">Direct Reports</div>
+    <div class="sub-grid">
+      <div class="sub-card"><div class="sub-role">Staff &mdash; P</div><h4>Photographer</h4><div class="sub-items"><span>Visual content creation</span></div></div>
+      <div class="sub-card"><div class="sub-role">Staff &mdash; MA</div><h4>Marketing Assistant</h4><div class="sub-items"><span>Marketing support</span></div></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function switchTab(viewName) {
+    document.querySelectorAll('.controls button').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.view === viewName);
+    });
+    document.querySelectorAll('.view-section').forEach(section => {
+      section.style.display = 'none';
+    });
+    const target = document.getElementById('view-' + viewName);
+    if (target) {
+      target.style.display = target.classList.contains('detail-view') ? 'block' : 'grid';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+  document.querySelectorAll('.controls button').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.view));
+  });
+</script>
+</body>
+</html>
