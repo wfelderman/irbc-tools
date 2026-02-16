@@ -447,12 +447,16 @@
         </div>
       </div>
 
-      <div class="connector-label">&#9660; Reports To Integrator &#9660;</div>
+      <div class="connector-label">&#9660; Reports To Visionary &#9660;</div>
 
-      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:12px; max-width:700px; margin:0 auto 8px;">
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:12px; max-width:350px; margin:0 auto 8px;">
         <div class="sub-card" style="text-align:center;"><div class="sub-role">Support</div><h4>Executive Assistant</h4></div>
-        <div class="sub-card" style="text-align:center;"><div class="sub-role">Support</div><h4>Communications Admin</h4></div>
-        <div class="sub-card" style="text-align:center;"><div class="sub-role">Support</div><h4>Operations Assistant</h4></div>
+      </div>
+
+      <div class="connector-label">&#9660; Assistant To Integrator &#9660;</div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:12px; max-width:350px; margin:0 auto 8px;">
+        <div class="sub-card" style="text-align:center;"><div class="sub-role">Support</div><h4>Operations &amp; Communications Assistant</h4></div>
       </div>
 
       <div class="connector-label">&#9660; Department Heads &#9660;</div>
@@ -654,12 +658,12 @@ document.querySelectorAll('#cardControls button').forEach(btn => {
    ══════════════════════════════════ */
 const org = {
   title: 'Visionary', sub: 'Vision & Spiritual Direction', c: 'visionary', sz: 'lg',
-  kids: [{
+  kids: [
+    { title: 'Executive Assistant', sub: 'Support', c: 'support' },
+    {
     title: 'Integrator', sub: 'Day-to-Day Execution', c: 'integrator', sz: 'md',
     kids: [
-      { title: 'Executive Assistant', sub: 'Support', c: 'support' },
-      { title: 'Communications Admin', sub: 'Support', c: 'support' },
-      { title: 'Operations Assistant', sub: 'Support', c: 'support' },
+      { title: 'Operations & Communications Assistant', sub: 'Support', c: 'support' },
       {
         title: 'Program Director', sub: 'Activities & Scheduling', c: 'program', dept: 'program',
         kids: [
